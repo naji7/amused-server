@@ -3,3 +3,105 @@ info:
   title: Products API
   version: 1.0.0
   description: API for managing products.
+servers:
+  - url: http://localhost:8080/
+    description: Local server
+paths:
+  /products:
+    post:
+      summary: Create a New Product
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ProductInput"
+      responses:
+        "201":
+          description: Product Created Successfully
+      x-events:
+        emits:
+          - ProductCreated
+
+    get:
+      summary: List All the Products
+      responses:
+        "200":
+          description: Product List
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Product"
+
+  /products/{id}:
+    put:
+      summary: Update a Product
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ProductInput"
+      responses:
+        "200":
+          description: Product updated
+      x-events:
+        emits:
+          - ProductUpdated
+
+    delete:
+      summary: delete a product
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        "204":
+          description: Product Deleted
+      x-events:
+        emits:
+          - ProductDeleted
+
+components:
+  schemas:
+    Product:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        price:
+          type: number
+          format: float
+        stock:
+          type: integer
+
+    ProductInput:
+      type: object
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        price:
+          type: number
+          format: float
+        stock:
+          type: integer
+      required:
+        - name
+        - price
+        - stock
