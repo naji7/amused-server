@@ -1,8 +1,23 @@
+import { LOW_STOCK_THRESHOLD } from "../config";
 import { CreateProductDTO, UpdateProductDTO } from "../dto";
 import { prisma } from "../prisma/prisma.service";
+import { notificationBus } from "./notification.service";
 
 export const createProductService = async (data: CreateProductDTO) => {
-  return prisma.product.create({ data });
+  const createdProduct = await prisma.product.create({ data });
+
+  if (createdProduct.quantity < LOW_STOCK_THRESHOLD) {
+    notificationBus.emit("lowStock", {
+      productId: createdProduct.id,
+      productName: createdProduct.name,
+      sellerId: createdProduct.sellerId,
+      quantity: createdProduct.quantity,
+      threshold: LOW_STOCK_THRESHOLD,
+      type: "LowStockWarning",
+    });
+  }
+
+  return createdProduct;
 };
 
 export const listProductsService = async () => {
@@ -13,10 +28,23 @@ export const updateProductService = async (
   id: string,
   data: UpdateProductDTO
 ) => {
-  return prisma.product.update({
+  const updatedProduct = await prisma.product.update({
     where: { id },
     data,
   });
+
+  if (updatedProduct.quantity < LOW_STOCK_THRESHOLD) {
+    notificationBus.emit("lowStock", {
+      productId: updatedProduct.id,
+      productName: updatedProduct.name,
+      sellerId: updatedProduct.sellerId,
+      quantity: updatedProduct.quantity,
+      threshold: LOW_STOCK_THRESHOLD,
+      type: "LowStockWarning",
+    });
+  }
+
+  return updatedProduct;
 };
 
 export const deleteProductService = async (id: string) => {

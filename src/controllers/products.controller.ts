@@ -47,6 +47,7 @@ export const updateProduct = async (
     const product = await updateProductService(id, data);
     res.status(200).json(product);
   } catch (err) {
+    console.log("err : ", err);
     next(err);
   }
 };

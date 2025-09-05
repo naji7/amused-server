@@ -6,7 +6,7 @@ import fs from "fs";
 
 import { corsOptions } from "./config";
 import { notFound, serverError } from "./middleware";
-import { products, root } from "./routes";
+import { events, products, root } from "./routes";
 
 export const createApp = () => {
   const app = express();
@@ -30,6 +30,7 @@ export const createApp = () => {
   // routers
   app.use("/", root);
   app.use("/products", products);
+  app.use("/events", events);
 
   //error handles
   app.use(notFound);
