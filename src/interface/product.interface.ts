@@ -11,3 +11,8 @@ export interface IProduct {
   createdAt: Date;
   updatedAt: Date;
 }
+
+export interface Client {
+  id: string;
+  res: Response;
+}

@@ -1,12 +1,14 @@
 import { LOW_STOCK_THRESHOLD } from "../config";
 import { CreateProductDTO, UpdateProductDTO } from "../dto";
 import { prisma } from "../prisma/prisma.service";
+import { publishLowStock } from "./aws.service";
 import { notificationBus } from "./notification.service";
 
 export const createProductService = async (data: CreateProductDTO) => {
   const createdProduct = await prisma.product.create({ data });
 
   if (createdProduct.quantity < LOW_STOCK_THRESHOLD) {
+    // await publishLowStock(createdProduct);
     notificationBus.emit("lowStock", {
       productId: createdProduct.id,
       productName: createdProduct.name,
@@ -34,6 +36,7 @@ export const updateProductService = async (
   });
 
   if (updatedProduct.quantity < LOW_STOCK_THRESHOLD) {
+    // await publishLowStock(updatedProduct);
     notificationBus.emit("lowStock", {
       productId: updatedProduct.id,
       productName: updatedProduct.name,
