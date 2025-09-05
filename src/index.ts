@@ -4,6 +4,7 @@ import dotenv from "dotenv";
 dotenv.config();
 
 import { createApp } from "./app";
+import logger from "./services/winston.service";
 
 let PORT = process.env.PORT || "3000";
 
@@ -17,14 +18,19 @@ if (cluster.isPrimary) {
   }
 
   cluster.on("exit", (worker, code, signal) => {
-    console.log(`Worker ${worker.process.pid} died. Forking a new worker!`);
+    logger.info(`Worker ${worker.process.pid} died. Forking a new worker!`);
     cluster.fork();
   });
 } else {
   const app = createApp();
 
   app.listen(parseInt(PORT), () => {
-    console.log(`Server started on port ${PORT}`);
+    logger.info(`Server started on port ${PORT}`);
+  });
+
+  process.on("SIGTERM", () => {
+    logger.info(`Worker ${process.pid} shutting down...`);
+    process.exit(0);
   });
 }
 
