@@ -6,15 +6,11 @@ import { notificationBus } from "./notification.service";
 
 export const createProductService = async (
   data: CreateProductDTO,
-  file: Express.MulterS3.File
+  file?: Express.MulterS3.File
 ) => {
-  let imageUrl: string;
+  const imageUrl = file?.location || "";
 
-  console.log("file : ", file);
-
-  if (file) {
-    imageUrl = file.location;
-  }
+  // console.log("file : ", file);
 
   const createdProduct = await prisma.product.create({
     data: {
@@ -24,7 +20,7 @@ export const createProductService = async (
       price: Number(data.price),
       quantity: Number(data.quantity),
       category: data.category,
-      imageUrl: imageUrl,
+      imageUrl,
     },
   });
 

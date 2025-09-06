@@ -11,7 +11,7 @@ model Product {
   id          String          @id @default(auto()) @map("_id") @db.ObjectId
   sellerId    String          
   name        String
-  imageUrl    String
+  imageUrl    String?
   description String
   price       Float
   quantity    Int

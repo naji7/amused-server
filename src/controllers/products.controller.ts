@@ -17,7 +17,7 @@ export const createProduct = async (
     const data: CreateProductDTO = req.body;
     const file = req.file;
     // console.log("fileee : ",file)
-    const product = await createProductService(data, file);
+    const product = await createProductService(data, file as any);
     res.status(201).json(product);
   } catch (err) {
     console.log("err : ", err);
