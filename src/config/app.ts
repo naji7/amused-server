@@ -25,3 +25,5 @@ export const AWS_SECRET_ACCESS_KEY = process.env.AWS_SECRET_ACCESS_KEY || "";
 export const PRODUCT_EVENTS_TOPIC_ARN =
   process.env.PRODUCT_EVENTS_TOPIC_ARN || "";
 export const LOW_STOCK_TOPIC_ARN = process.env.LOW_STOCK_TOPIC_ARN || "";
+export const S3_BUCKET_NAME =
+  process.env.S3_BUCKET_NAME || "default-bucket-name";

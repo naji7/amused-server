@@ -4,8 +4,29 @@ import { prisma } from "../prisma/prisma.service";
 import { publishLowStock } from "./aws.service";
 import { notificationBus } from "./notification.service";
 
-export const createProductService = async (data: CreateProductDTO) => {
-  const createdProduct = await prisma.product.create({ data });
+export const createProductService = async (
+  data: CreateProductDTO,
+  file: Express.MulterS3.File
+) => {
+  let imageUrl: string;
+
+  console.log("file : ", file);
+
+  if (file) {
+    imageUrl = file.location;
+  }
+
+  const createdProduct = await prisma.product.create({
+    data: {
+      sellerId: data.sellerId,
+      name: data.name,
+      description: data.description,
+      price: Number(data.price),
+      quantity: Number(data.quantity),
+      category: data.category,
+      imageUrl: imageUrl,
+    },
+  });
 
   if (createdProduct.quantity < LOW_STOCK_THRESHOLD) {
     // await publishLowStock(createdProduct);

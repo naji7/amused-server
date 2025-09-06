@@ -12,10 +12,12 @@ export const createProduct = async (
   res: Response,
   next: NextFunction
 ) => {
-  console.log("haiii");
+  // console.log("haiii");
   try {
     const data: CreateProductDTO = req.body;
-    const product = await createProductService(data);
+    const file = req.file;
+    // console.log("fileee : ",file)
+    const product = await createProductService(data, file);
     res.status(201).json(product);
   } catch (err) {
     console.log("err : ", err);

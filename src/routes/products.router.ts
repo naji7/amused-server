@@ -1,4 +1,5 @@
 import { Router } from "express";
+
 import {
   createProduct,
   deleteProduct,
@@ -6,11 +7,13 @@ import {
   updateProduct,
 } from "../controllers";
 import { validateBodyParams } from "../middleware";
+import { uploadAws } from "../services/aws.service";
 
 const router = Router();
 
 router.post(
   "/",
+  uploadAws.single("image"),
   validateBodyParams(
     "sellerId",
     "name",

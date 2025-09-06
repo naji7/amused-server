@@ -6,6 +6,7 @@ info:
 servers:
   - url: http://localhost:8080/
     description: Local server
+
 paths:
   /products:
     post:
@@ -22,6 +23,7 @@ paths:
       x-events:
         emits:
           - ProductCreated
+          - LowStockWarning
 
     get:
       summary: List All the Products
@@ -56,6 +58,7 @@ paths:
       x-events:
         emits:
           - ProductUpdated
+          - LowStockWarning
 
     delete:
       summary: delete a product
@@ -72,6 +75,38 @@ paths:
         emits:
           - ProductDeleted
 
+  /events/stream:
+    get:
+      summary: Low-Stock Events (SSE)
+      responses:
+        "200":
+          description: Stream of events
+          content:
+            text/event-stream:
+              schema:
+                type: string
+      x-events:
+        receives:
+          - LowStockWarning
+
+  /events/sns-endpoint:
+    post:
+      summary: AWS SNS Notification Endpoint
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: true
+      responses:
+        "200":
+          description: receipt of SNS message
+      x-events:
+        receives:
+          - SubscriptionConfirmation
+          - LowStockWarning
+
 components:
   schemas:
     Product:
@@ -79,6 +114,10 @@ components:
       properties:
         id:
           type: string
+          example: "64f6d2c3e4d3c8a8d9b4f567"
+        sellerId:
+          type: string
+          example: "seller-123"
         name:
           type: string
         description:
@@ -86,12 +125,26 @@ components:
         price:
           type: number
           format: float
-        stock:
+        quantity:
           type: integer
+        imageUrl:
+          type: string
+          format: uri
+          example: "https://s3.amazonaws.com/bucketname/file.png"
+        category:
+          $ref: "#/components/schemas/Category"
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
 
     ProductInput:
       type: object
       properties:
+        sellerId:
+          type: string
         name:
           type: string
         description:
@@ -99,9 +152,26 @@ components:
         price:
           type: number
           format: float
-        stock:
+        quantity:
           type: integer
+        imageUrl:
+          type: string
+          format: uri
+        category:
+          $ref: "#/components/schemas/Category"
       required:
+        - sellerId
         - name
+        - description
         - price
-        - stock
+        - quantity
+        - category
+
+    Category:
+      type: string
+      enum:
+        - ELECTRONICS
+        - FASHION
+        - HOME
+        - BOOKS
+        - TOYS
